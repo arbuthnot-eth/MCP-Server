@@ -1,0 +1,41 @@
+# Smithery configuration file for PayPal MCP Server
+# See: https://smithery.ai/docs/config
+
+startCommand:
+  type: stdio
+
+configSchema:
+  # JSON Schema defining the configuration options for the MCP
+  type: object
+  required:
+    - paypalClientId
+    - paypalClientSecret
+  properties:
+    paypalClientId:
+      type: string
+      description: Your PayPal Client ID from the PayPal Developer Dashboard.
+    paypalClientSecret:
+      type: string
+      description: Your PayPal Client Secret from the PayPal Developer Dashboard.
+    paypalEnvironment:
+      type: string
+      enum: [sandbox, live]
+      default: sandbox
+      description: The PayPal environment to use (sandbox or live).
+    logLevel:
+      type: string
+      enum: [error, warn, info, debug]
+      default: info
+      description: The logging level for the server.
+
+commandFunction: |
+  (config) => ({
+    command: 'node',
+    args: ['build/index.js'],
+    env: {
+      PAYPAL_CLIENT_ID: config.paypalClientId,
+      PAYPAL_CLIENT_SECRET: config.paypalClientSecret,
+      PAYPAL_ENVIRONMENT: config.paypalEnvironment || 'sandbox',
+      LOG_LEVEL: config.logLevel || 'info'
+    }
+  })
